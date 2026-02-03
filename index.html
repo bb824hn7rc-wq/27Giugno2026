@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Samantha & Domenico</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Cormorant+Garamond:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+body {
+  margin: 0;
+  height: 100vh;
+  background: #f2efe9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Cormorant Garamond', serif;
+  overflow: hidden;
+}
+
+/* ===== ENVELOPE ===== */
+.envelope {
+  position: relative;
+  width: 280px;
+  height: 180px;
+  cursor: pointer;
+}
+
+.back {
+  background: #6b7b5c;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  border-radius: 6px;
+}
+
+.front {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-left: 140px solid transparent;
+  border-right: 140px solid transparent;
+  border-bottom: 90px solid #5f6f52;
+  bottom: 0;
+  z-index: 3;
+}
+
+.flap {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-left: 140px solid transparent;
+  border-right: 140px solid transparent;
+  border-top: 90px solid #7c8b6a;
+  top: 0;
+  transform-origin: top;
+  transition: transform 1s ease;
+  z-index: 4;
+}
+
+/* ✨ Sigillo animato */
+.seal {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  background: radial-gradient(circle at 30% 30%, #ffd700, #c9a100);
+  border-radius: 50%;
+  top: 65px;
+  left: 115px;
+  z-index: 5;
+  animation: sealPulse 3s infinite ease-in-out;
+  transition: opacity 0.6s;
+}
+
+@keyframes sealPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* ===== CARD ===== */
+.card {
+  position: absolute;
+  width: 90%;
+  max-width: 360px;
+  background:
+    linear-gradient(0deg, rgba(0,0,0,0.03), rgba(0,0,0,0.03)),
+    repeating-linear-gradient(
+      45deg,
+      #fffdf8,
+      #fffdf8 10px,
+      #f7f4ee 10px,
+      #f7f4ee 20px
+    );
+  padding: 35px 25px;
+  border-radius: 14px;
+  text-align: center;
+  top: 50%;
+  transform: translateY(100%);
+  transition: transform 1.2s ease;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+  animation: floatCard 4s ease-in-out infinite;
+}
+
+/* ✨ Carta che fluttua */
+@keyframes floatCard {
+  0%, 100% { transform: translateY(-50%) translateX(0); }
+  50% { transform: translateY(-48%) translateX(0); }
+}
+
+h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.page {
+  display: none;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.page.active {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===== OPEN STATE ===== */
+.open .flap {
+  transform: rotateX(180deg);
+}
+
+.open .seal {
+  opacity: 0;
+}
+
+.open + .card {
+  transform: translateY(-50%);
+}
+
+/* ===== BUTTON ===== */
+.next {
+  margin-top: 25px;
+  padding: 10px 20px;
+  border: none;
+  background: #6b7b5c;
+  color: white;
+  border-radius: 25px;
+  font-size: 14px;
+  font-family: 'Playfair Display', serif;
+}
+
+/* ===== FORM ===== */
+input, textarea {
+  width: 100%;
+  margin-top: 10px;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-family: 'Cormorant Garamond', serif;
+}
+</style>
+</head>
+
+<body>
+
+<div class="envelope" onclick="openEnvelope(this)">
+  <div class="back"></div>
+  <div class="flap"></div>
+  <div class="front"></div>
+  <div class="seal"></div>
+</div>
+
+<div class="card">
+  <div class="page active">
+    <h2>Samantha & Domenico</h2>
+    <p>Sono lieti di invitarvi al loro matrimonio</p>
+  </div>
+
+  <div class="page">
+    <p><strong>Sabato 27 giugno 2026</strong><br>Ore 15:00</p>
+  </div>
+
+  <div class="page">
+    <p><strong>Cerimonia</strong><br>
+    Convento SS. Crocifisso dei Padri Cappuccini<br>
+    Vico del Gargano (FG)</p>
+    <a href="https://maps.google.com" target="_blank">Google Maps</a><br>
+    <a href="https://maps.apple.com" target="_blank">Apple Maps</a>
+  </div>
+
+  <div class="page">
+    <p><strong>RSVP</strong></p>
+    <form onsubmit="sendRSVP(event)">
+      <input id="name" placeholder="Nome e Cognome" required>
+      <input id="guests" placeholder="Numero invitati">
+      <textarea id="notes" placeholder="Allergie / intolleranze"></textarea>
+      <button class="next" type="submit">Invia conferma</button>
+    </form>
+  </div>
+
+  <button class="next" onclick="nextPage()">Continua</button>
+</div>
+
+<script>
+let current = 0;
+const pages = document.querySelectorAll('.page');
+
+function openEnvelope(el) {
+  el.classList.add('open');
+}
+
+function nextPage() {
+  pages[current].classList.remove('active');
+  current = (current + 1) % pages.length;
+  pages[current].classList.add('active');
+}
+
+function sendRSVP(e) {
+  e.preventDefault();
+  const name = document.getElementById('name').value;
+  const guests = document.getElementById('guests').value;
+  const notes = document.getElementById('notes').value;
+
+  const body = `Nome: ${name}%0D%0AInvitati: ${guests}%0D%0ANote: ${notes}`;
+  window.location.href = `mailto:domenicobiscotti13@gmail.com?subject=RSVP Matrimonio&body=${body}`;
+}
+</script>
+
+</body>
+</html>
